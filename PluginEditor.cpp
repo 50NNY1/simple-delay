@@ -6,13 +6,15 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor(AudioPluginAudi
     : AudioProcessorEditor(&p), processorRef(p),
       gainSliderAttachment(p.state, "gain", gainSlider),
       feedbackSliderAttachment(p.state, "feedback", feedbackSlider),
-      mixSliderAttachment(p.state, "mix", mixSlider)
+      mixSliderAttachment(p.state, "mix", mixSlider),
+      timeSliderAttachment(p.state, "time", timeSlider)
 {
     gainSlider.setSliderStyle(juce::Slider::SliderStyle::LinearVertical);
     feedbackSlider.setSliderStyle(juce::Slider::SliderStyle::Rotary);
     mixSlider.setSliderStyle(juce::Slider::SliderStyle::Rotary);
+    timeSlider.setSliderStyle(juce::Slider::SliderStyle::Rotary);
 
-    for (auto *slider : {&gainSlider, &feedbackSlider, &mixSlider})
+    for (auto *slider : {&gainSlider, &feedbackSlider, &mixSlider, &timeSlider})
     {
         slider->setTextBoxStyle(juce::Slider::TextBoxBelow, true, 200, 30);
         addAndMakeVisible(slider);
@@ -45,4 +47,7 @@ void AudioPluginAudioProcessorEditor::resized()
     juce::Rectangle<int> feedbackBounds = knobsBounds.removeFromLeft(knobsBounds.getWidth() / 2);
     feedbackSlider.setBounds(feedbackBounds.reduced(margin));
     mixSlider.setBounds(knobsBounds.reduced(margin));
+
+    juce::Rectangle<int> timeBounds = bounds.removeFromBottom(getHeight() / 2);
+    timeSlider.setBounds(timeBounds.reduced(margin));
 }

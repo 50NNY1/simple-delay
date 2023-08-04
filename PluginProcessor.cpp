@@ -11,9 +11,10 @@ AudioPluginAudioProcessor::AudioPluginAudioProcessor()
                          .withOutput("Output", juce::AudioChannelSet::stereo(), true)
 #endif
                          ),
-      state(*this, nullptr, "STATE", {std::make_unique<juce::AudioParameterFloat>("gain", "Gain", 0.0f, 1.0f, 1.0f),          // gain
-                                      std::make_unique<juce::AudioParameterFloat>("feedback", "Feedback", 0.0f, 1.0f, 0.35f), // feedback
-                                      std::make_unique<juce::AudioParameterFloat>("mix", "Dry/Wet", 0.0f, 1.0f, 0.5f)})       // mix
+      state(*this, nullptr, "STATE", {std::make_unique<juce::AudioParameterFloat>("gain", "Gain", 0.0f, 1.0f, 1.0f),             // gain
+                                      std::make_unique<juce::AudioParameterFloat>("feedback", "Feedback", 0.0f, 1.0f, 0.35f),    // feedback
+                                      std::make_unique<juce::AudioParameterFloat>("mix", "Dry/Wet", 0.0f, 1.0f, 0.5f),           // mix
+                                      std::make_unique<juce::AudioParameterFloat>("time", "Delay Time", 1.0f, 2000.0f, 500.0f)}) // time
 {
 }
 
@@ -92,6 +93,7 @@ void AudioPluginAudioProcessor::prepareToPlay(double sampleRate, int samplesPerB
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
     int delayMilliseconds = 500;
+    // int delayMilliseconds = state.getParameter("time")->getValue();
     auto delaySamples = (int)std::round(sampleRate * delayMilliseconds / 1000.0);
     delayBuffer.setSize(getTotalNumOutputChannels(), delaySamples);
     delayBuffer.clear();
