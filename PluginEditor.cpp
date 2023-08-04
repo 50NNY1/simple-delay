@@ -2,13 +2,25 @@
 #include "PluginEditor.h"
 
 //==============================================================================
-AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAudioProcessor& p)
-    : AudioProcessorEditor (&p), processorRef (p)
+AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor(AudioPluginAudioProcessor &p)
+    : AudioProcessorEditor(&p), processorRef(p),
+      gainSliderAttachment(p.state, "gain", gainSlider),
+      feedbackSliderAttachment(p.state, "feedback", feedbackSlider),
+      mixSliderAttachment(p.state, "mix", mixSlider)
 {
-    juce::ignoreUnused (processorRef);
+    gainSlider.setSliderStyle(juce::Slider::SliderStyle::LinearVertical);
+    feedbackSlider.setSliderStyle(juce::Slider::SliderStyle::Rotary);
+    mixSlider.setSliderStyle(juce::Slider::SliderStyle::Rotary);
+
+    for (auto *slider : {&gainSlider, &feedbackSlider, &mixSlider})
+    {
+        slider->setTextBoxStyle(juce::Slider::TextBoxBelow, true, 200, 30);
+        addAndMakeVisible(slider);
+    }
+    juce::ignoreUnused(processorRef);
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    setSize (400, 300);
+    setSize(400, 300);
 }
 
 AudioPluginAudioProcessorEditor::~AudioPluginAudioProcessorEditor()
@@ -16,18 +28,21 @@ AudioPluginAudioProcessorEditor::~AudioPluginAudioProcessorEditor()
 }
 
 //==============================================================================
-void AudioPluginAudioProcessorEditor::paint (juce::Graphics& g)
+void AudioPluginAudioProcessorEditor::paint(juce::Graphics &g)
 {
-    // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
-
-    g.setColour (juce::Colours::white);
-    g.setFont (15.0f);
-    g.drawFittedText ("Hello World!", getLocalBounds(), juce::Justification::centred, 1);
+    g.fillAll(juce::Colours::black);
 }
 
 void AudioPluginAudioProcessorEditor::resized()
 {
-    // This is generally where you'll want to lay out the positions of any
-    // subcomponents in your editor..
+    juce::Rectangle<int> bounds = getLocalBounds();
+    int margin = 20;
+
+    juce::Rectangle<int> gainBounds = bounds.removeFromRight(getWidth() / 3);
+    gainSlider.setBounds(gainBounds.reduced(margin));
+
+    juce::Rectangle<int> knobsBounds = bounds.removeFromTop(getHeight() / 2);
+    juce::Rectangle<int> feedbackBounds = knobsBounds.removeFromLeft(knobsBounds.getWidth() / 2);
+    feedbackSlider.setBounds(feedbackBounds.reduced(margin));
+    mixSlider.setBounds(knobsBounds.reduced(margin));
 }
