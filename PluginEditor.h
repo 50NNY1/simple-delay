@@ -17,12 +17,11 @@ private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     AudioPluginAudioProcessor &processorRef;
-    juce::Slider gainSlider, feedbackSlider, mixSlider, timeSlider;
+    juce::Slider gainSlider, feedbackSlider, mixSlider;
     juce::AudioProcessorValueTreeState::SliderAttachment
         gainSliderAttachment,
         feedbackSliderAttachment,
-        mixSliderAttachment,
-        timeSliderAttachment;
+        mixSliderAttachment;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AudioPluginAudioProcessorEditor)
 };
