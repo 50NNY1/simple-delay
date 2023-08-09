@@ -6,20 +6,44 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor(AudioPluginAudi
     : AudioProcessorEditor(&p), processorRef(p),
       gainSliderAttachment(p.state, "gain", gainSlider),
       feedbackSliderAttachment(p.state, "feedback", feedbackSlider),
-      mixSliderAttachment(p.state, "mix", mixSlider)
+      mixSliderAttachment(p.state, "mix", mixSlider),
+      timeSliderAttachment(p.state, "time", timeSlider)
 {
     gainSlider.setSliderStyle(juce::Slider::SliderStyle::LinearVertical);
     feedbackSlider.setSliderStyle(juce::Slider::SliderStyle::Rotary);
     mixSlider.setSliderStyle(juce::Slider::SliderStyle::Rotary);
+    timeSlider.setSliderStyle(juce::Slider::SliderStyle::Rotary);
+    gainLabel.setText("Gain", juce::dontSendNotification);
+    feedbackLabel.setText("Feedback", juce::dontSendNotification);
+    mixLabel.setText("Mix", juce::dontSendNotification);
+    timeLabel.setText("Time", juce::dontSendNotification);
 
-    for (auto *slider : {&gainSlider, &feedbackSlider, &mixSlider})
+    // for (auto *slider : {&gainSlider, &feedbackSlider, &mixSlider, &timeSlider})
+    // {
+    //     slider->setTextBoxStyle(juce::Slider::TextBoxBelow, true, 200, 30);
+    //     slider->setLookAndFeel(&laf4);
+    //     addAndMakeVisible(slider);
+    // }
+
+    std::vector<std::pair<juce::Slider *, juce::Label *>> sliderLabelPairs = {
+        {&gainSlider, &gainLabel},
+        {&feedbackSlider, &feedbackLabel},
+        {&mixSlider, &mixLabel},
+        {&timeSlider, &timeLabel}};
+
+    for (const auto &pair : sliderLabelPairs)
     {
+        juce::Slider *slider = pair.first;
+        juce::Label *label = pair.second;
+
         slider->setTextBoxStyle(juce::Slider::TextBoxBelow, true, 200, 30);
+        slider->setLookAndFeel(&laf4);
         addAndMakeVisible(slider);
+
+        label->attachToComponent(slider, false);
+        label->setJustificationType(juce::Justification::centred);
+        addAndMakeVisible(label);
     }
-    juce::ignoreUnused(processorRef);
-    // Make sure that before the constructor has finished, you've set the
-    // editor's size to whatever you need it to be.
     setSize(400, 300);
 }
 
@@ -30,7 +54,7 @@ AudioPluginAudioProcessorEditor::~AudioPluginAudioProcessorEditor()
 //==============================================================================
 void AudioPluginAudioProcessorEditor::paint(juce::Graphics &g)
 {
-    g.fillAll(juce::Colours::black);
+    g.fillAll(laf4.backgroundColour);
 }
 
 void AudioPluginAudioProcessorEditor::resized()
@@ -45,4 +69,7 @@ void AudioPluginAudioProcessorEditor::resized()
     juce::Rectangle<int> feedbackBounds = knobsBounds.removeFromLeft(knobsBounds.getWidth() / 2);
     feedbackSlider.setBounds(feedbackBounds.reduced(margin));
     mixSlider.setBounds(knobsBounds.reduced(margin));
+
+    juce::Rectangle<int> timeBounds = bounds.removeFromLeft(bounds.getWidth() / 2);
+    timeSlider.setBounds(timeBounds.reduced(margin));
 }
