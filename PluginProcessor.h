@@ -4,7 +4,8 @@
 #include <juce_dsp/juce_dsp.h>
 
 //==============================================================================
-class AudioPluginAudioProcessor : public juce::AudioProcessor
+class AudioPluginAudioProcessor : public juce::AudioProcessor,
+                                  public juce::AudioProcessorValueTreeState::Listener
 {
 public:
     //==============================================================================
@@ -55,7 +56,8 @@ private:
     std::array<float, 2> delayValue{{}};
     std::array<float, 2> lastDelayOutput;
     std::array<juce::LinearSmoothedValue<float>, 2> delayFeedbackVolume;
-    int delayBufferPos = 0;
-    juce::AudioBuffer<float> delayBuffer;
+
+    void parameterChanged(const juce::String &parameterID, float newValue) override;
+    juce::AudioProcessorValueTreeState::ParameterLayout createParameters();
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AudioPluginAudioProcessor)
 };

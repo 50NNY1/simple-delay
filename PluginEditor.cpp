@@ -3,11 +3,7 @@
 
 //==============================================================================
 AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor(AudioPluginAudioProcessor &p)
-    : AudioProcessorEditor(&p), processorRef(p),
-      gainSliderAttachment(p.state, "gain", gainSlider),
-      feedbackSliderAttachment(p.state, "feedback", feedbackSlider),
-      mixSliderAttachment(p.state, "mix", mixSlider),
-      timeSliderAttachment(p.state, "time", timeSlider)
+    : AudioProcessorEditor(&p), processorRef(p)
 {
     gainSlider.setSliderStyle(juce::Slider::SliderStyle::LinearVertical);
     feedbackSlider.setSliderStyle(juce::Slider::SliderStyle::Rotary);
@@ -17,13 +13,6 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor(AudioPluginAudi
     feedbackLabel.setText("Feedback", juce::dontSendNotification);
     mixLabel.setText("Mix", juce::dontSendNotification);
     timeLabel.setText("Time", juce::dontSendNotification);
-
-    // for (auto *slider : {&gainSlider, &feedbackSlider, &mixSlider, &timeSlider})
-    // {
-    //     slider->setTextBoxStyle(juce::Slider::TextBoxBelow, true, 200, 30);
-    //     slider->setLookAndFeel(&laf4);
-    //     addAndMakeVisible(slider);
-    // }
 
     std::vector<std::pair<juce::Slider *, juce::Label *>> sliderLabelPairs = {
         {&gainSlider, &gainLabel},
@@ -44,6 +33,11 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor(AudioPluginAudi
         label->setJustificationType(juce::Justification::centred);
         addAndMakeVisible(label);
     }
+    auto &apvts = processorRef.state;
+    gainSliderAttachment = std::make_unique<juce::SliderParameterAttachment>(*apvts.getParameter("GAIN"), gainSlider);
+    feedbackSliderAttachment = std::make_unique<juce::SliderParameterAttachment>(*apvts.getParameter("FEEDBACK"), feedbackSlider);
+    mixSliderAttachment = std::make_unique<juce::SliderParameterAttachment>(*apvts.getParameter("MIX"), mixSlider);
+    timeSliderAttachment = std::make_unique<juce::SliderParameterAttachment>(*apvts.getParameter("TIME"), timeSlider);
     setSize(400, 300);
 }
 
