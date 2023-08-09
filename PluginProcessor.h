@@ -1,6 +1,7 @@
 #pragma once
 
 #include <juce_audio_processors/juce_audio_processors.h>
+#include <juce_dsp/juce_dsp.h>
 
 //==============================================================================
 class AudioPluginAudioProcessor : public juce::AudioProcessor
@@ -46,7 +47,14 @@ public:
 
 private:
     //==============================================================================
+    static constexpr auto effectDelaySamples = 192000;
+    juce::dsp::DelayLine<float> delay{effectDelaySamples};
+    juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Linear> linear{effectDelaySamples};
+    juce::dsp::DryWetMixer<float> mixer;
 
+    std::array<float, 2> delayValue{{}};
+    std::array<float, 2> lastDelayOutput;
+    std::array<juce::LinearSmoothedValue<float>, 2> delayFeedbackVolume;
     int delayBufferPos = 0;
     juce::AudioBuffer<float> delayBuffer;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AudioPluginAudioProcessor)
